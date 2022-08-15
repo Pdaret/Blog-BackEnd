@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"math"
 	"strconv"
 
 	"github.com/Sifouo/Blog-BackEnd/database"
@@ -34,9 +35,9 @@ func AllPost(c *fiber.Ctx) error {
 	return c.JSON(fiber.Map{
 		"data": blogs,
 		"meta": fiber.Map{
-			"total": total,
-			"page":  page,
-			"limit": limit,
+			"total":     total,
+			"page":      page,
+			"last_page": math.Ceil(float64(int(total) / limit)),
 		},
 	})
 }
