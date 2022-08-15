@@ -1,6 +1,8 @@
 package controller
 
 import (
+	"strconv"
+
 	"github.com/Sifouo/Blog-BackEnd/database"
 	"github.com/Sifouo/Blog-BackEnd/models"
 	"github.com/gofiber/fiber/v2"
@@ -21,6 +23,20 @@ func CreatePost(c *fiber.Ctx) error {
 	})
 }
 
-
-
-func AllPost
+func AllPost(c *fiber.Ctx) error {
+	page, _ := strconv.Atoi(c.Query("page", "1"))
+	limit := 5
+	offset := (page - 1) * limit
+	var total int64
+	var blogs []models.Blog
+	database.DB.Preload("User").Offset(offset).Limit(limit).Find(&blogs)
+	database.DB.Model(&models.Blog{}).Count(&total)
+	return c.JSON(fiber.Map{
+		"data": blogs,
+		"meta": fiber.Map{
+			"total": total,
+			"page":  page,
+			"limit": limit,
+		},
+	})
+}

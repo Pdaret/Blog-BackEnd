@@ -32,3 +32,11 @@ func IsPhone(phone string) bool {
 	Re := regexp.MustCompile(`^[0-9]{10}$`)
 	return Re.MatchString(phone)
 }
+
+func (u *User) CompareHashAndPassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword(u.Password, []byte(password))
+	if err != nil {
+		return false
+	}
+	return true
+}

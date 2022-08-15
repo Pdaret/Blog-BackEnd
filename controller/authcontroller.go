@@ -1,10 +1,14 @@
 package controller
 
 import (
+	"strconv"
 	"strings"
+	"time"
 
 	"github.com/Sifouo/Blog-BackEnd/database"
 	"github.com/Sifouo/Blog-BackEnd/models"
+	"github.com/Sifouo/Blog-BackEnd/utils"
+	"github.com/dgrijalva/jwt-go/v4"
 	"github.com/gofiber/fiber/v2"
 )
 
@@ -67,4 +71,46 @@ func Register(c *fiber.Ctx) error {
 		"user":    user,
 		"message": "User created successfully",
 	})
+}
+
+func Login(c *fiber.Ctx) error {
+	var data map[string]interface{}
+	var user models.User
+
+	//Check if the request is a json request
+	if err := c.BodyParser(&data); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(err)
+	}
+
+	//Check if the email address is already in use
+	if err := database.DB.Where("email = ?", data["email"].(string)).First(&user).Error; err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid email address",
+		})
+	}
+	//Check if the password is correct
+	if !user.CompareHashAndPassword(data["password"].(string)) {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Invalid password",
+		})
+	}
+	token, err := utils.GenerateJwt(strconv.Itoa(int(user.Id)))
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(err)
+	}
+	cookie := fiber.Cookie{
+		Name:     "token",
+		Value:    token,
+		Expires:  time.Now().Add(time.Hour * 24),
+		HTTPOnly: true,
+	}
+	c.Cookie(&cookie)
+	return c.JSON(fiber.Map{
+		"user":    user,
+		"message": "User logged in successfully",
+	})
+}
+
+type Claims struct {
+	jwt.StandardClaims
 }

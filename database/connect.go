@@ -18,11 +18,11 @@ func Connect() {
 		log.Fatal(err)
 	}
 	dsn := os.Getenv("DSN")
-	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	database, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	db.AutoMigrate(&models.User{})
-	DB = db
+	database.AutoMigrate(&models.User{})
+	database.AutoMigrate(&models.Blog{})
+	DB = database
 }
