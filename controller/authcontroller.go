@@ -111,6 +111,20 @@ func Login(c *fiber.Ctx) error {
 	})
 }
 
+func Loguot(c *fiber.Ctx) error {
+	cookie := fiber.Cookie{
+		Name:     "token",
+		Value:    "",
+		Expires:  time.Now().Add(-time.Hour),
+		HTTPOnly: true,
+	}
+	c.Cookie(&cookie)
+
+	return c.JSON(fiber.Map{
+		"message": "success!",
+	})
+}
+
 type Claims struct {
 	jwt.StandardClaims
 }
