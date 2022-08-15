@@ -8,7 +8,7 @@ import (
 	"github.com/Sifouo/Blog-BackEnd/database"
 	"github.com/Sifouo/Blog-BackEnd/models"
 	"github.com/Sifouo/Blog-BackEnd/utils"
-	"github.com/dgrijalva/jwt-go/v4"
+	"github.com/dgrijalva/jwt-go"
 	"github.com/gofiber/fiber/v2"
 )
 
